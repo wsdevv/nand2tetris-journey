@@ -20,46 +20,12 @@ CHIP Mux8Way16 {
     OUT out[16];
 
     PARTS:
-   
-    // bits are "reversed" in sel, e.g. 001 is 100
-    Or8Way(in[0..2]=sel[0..2], out=isnotone);
 
-    Not(in=sel[1], out=notMiddleBit);
-    Not(in=sel[0], out=notTwo);
-    Not(in=sel[2], out=notFive);
+    // very similar to 4 way
+    Mux4Way16(a=a , b=b , c=c , d=d, sel=sel[0..1] , out=o1);
+    Mux4Way16(a=e, b=f, c=g, d=h, sel=sel[0..1], out=o2);
 
-    // c if sel = 010 
-    And(a=notTwo, b=notFive, out=notTwoAndFive);
-    And(a=sel[1], b=notTwoAndFive, out=three);
-
-    // d if sel = 011 (110)
-    And(a=sel[0], b=sel[1], out=fourCheck);
-    And(a=fourCheck, b=notFive, out=four);
-
-    // e if sel = 100 (001)
-    Not(in=three, out=notThree);
-    And(a=notTwo, b=notThree, out=notTwoAndThree);
-    And(a=sel[2], b=notTwoAndThree, out=five);
-
-    // f if sel = 101
-    And(a=sel[0], b=sel[2], out=sixCheck);
-    And(a=notMiddleBit, b=sixCheck, out=six);
-
-    // g if sel = 110 (011)
-    And(a=sel[2], b=sel[1], out=sevenCheck);
-    And(a=sevenCheck, b=notTwo, out=seven);
-
-    // h if sel = 111
-    And(a=fourCheck, b=sel[2], out=eight);
-
-
-    // very inneficient
-    Mux16(a=a, b=b, sel=isnotone, out=o);
-    Mux16(a=o, b=c, sel=three, out=o2);
-    Mux16(a=o2, b=d, sel=four, out=o3);
-    Mux16(a=o3, b=e, sel=five, out=o4); //debug
-    Mux16(a=o4, b=f, sel=six, out=o5);
-    Mux16(a=o5, b=g, sel=seven, out=o6);
-    Mux16(a=o6, b=h, sel=eight, out=out);
+    // select based on the first bit, if first bit is 0, sel is <= 4, else >=4 (selecting the second mux)
+    Mux16(a=o1, b=o2, sel=sel[2], out=out);
 
 }

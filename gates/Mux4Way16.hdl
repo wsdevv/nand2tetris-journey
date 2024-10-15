@@ -14,17 +14,13 @@ CHIP Mux4Way16 {
     OUT out[16];
     
     PARTS:
-    
-    Or(a=sel[0], b=sel[1], out=selor);
-    And(a=selor, b=sel[1], out=selnd);
-    And(a=sel[1], b=sel[0], out=seland);
 
-    // if selor = 0 use a, if not use b (0 1) = 1, only when (0 0) = 0
-    Mux16(a=a, b=b, sel=selor, out=o);
+    // Multiplex both using the last bit as the decider
+    Mux16(a=a, b=b, sel=sel[0], out=o1);
+    Mux16(a=c, b=d, sel=sel[0], out=o2);
 
-    // if both selor and sel[1] are 1 than switch to c
-    Mux16(a=o, b=c, sel=selnd, out=o2);
+    // if the first bit is 1, sel > 1, which means we use second mux
+    // else if first bit is 0, sel is < 1, which means we use the first mux
+    Mux16(a=o1, b=o2, sel=sel[1], out=out);
 
-    // if sel[1] and sel[0] are 1 then switch to d
-    Mux16(a=o2, b=d, sel=seland, out=out);
 }

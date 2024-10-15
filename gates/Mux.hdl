@@ -11,8 +11,17 @@ CHIP Mux {
     OUT out;
 
     PARTS:
+    
     Not(in=sel, out=notsel);
+
+    // if sel == 1 and b == 1, output 1 (b)
     And(a=b, b=sel, out=o);
+
+    // if sel == 0 and a == 1, output 1 (a)
     And(a=a, b=notsel, out=o2);
-    Xor(a=o, b=o2, out=out);
+
+    // output 1 if one of the conditions above is right
+    // if both a and b eaqual one it should output 1
+    // else, the same
+    Or(a=o, b=o2, out=out);
 }

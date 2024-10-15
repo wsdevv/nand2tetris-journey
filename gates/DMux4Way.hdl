@@ -18,24 +18,16 @@ CHIP DMux4Way {
 
     // sel comes in reversed
 
-
     Not(in=sel[1], out=notFirstBit);
+    DMux(in=in, sel=sel[0], a=oa, b=ob);
+    DMux(in=in, sel=sel[0], a=oc, b=od);
+    
+    // only output bit to a if it is selected and sel < 01
+    And(a=oa, b=notFirstBit, out=a);
+    And(a=ob, b=notFirstBit, out=b);
 
-    // if sel = 00 out 1
-    Not(in=sel[0], out=notSecondBit);
-    And(a=notSecondBit, b=notFirstBit, out=one);
+    // only output bit to a if it is selected and sel > 01
+    And(a=oc, b=sel[1], out=c);
+    And(a=od, b=sel[1], out=d);
 
-    // if sel = 01 out 1
-    And(a=sel[0], b=notFirstBit, out=two);
-
-    // if sel = 10 out 1
-    And(a=notSecondBit, b=sel[1], out=three);
-
-    // if sel = 11 out 1
-    And(a=sel[0], b=sel[1], out=four);
-
-    DMux(in=in, sel=one , b=a );
-    DMux(in=in, sel=two, b=b );
-    DMux(in=in, sel=three, b=c );
-    DMux(in=in, sel=four, b=d );
 }
